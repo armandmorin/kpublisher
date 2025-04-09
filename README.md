@@ -134,7 +134,22 @@ The application is configured for deployment on Netlify:
    - Go to Site settings > Environment variables
    - Add all the variables from your `.env.local` file
 
-The deployment is configured to handle the dependency conflict between React 19 and react-quill by using the `--legacy-peer-deps` flag during installation.
+The deployment configuration includes:
+- Handling the dependency conflict between React 19 and react-quill by using the `--legacy-peer-deps` flag
+- Disabling ESLint during the build process to prevent build failures due to linting errors
+- Setting environment variables to skip telemetry and improve build performance
+
+#### Troubleshooting Deployment
+
+If you encounter build errors:
+
+1. **ESLint Errors**: The project includes an `.eslintrc.json` file that disables problematic rules. If you encounter additional ESLint errors, you can modify this file.
+
+2. **Dependency Conflicts**: The `netlify.toml` and `package.json` files are configured to use `--legacy-peer-deps` to resolve conflicts between React 19 and older dependencies like react-quill.
+
+3. **Build Command**: If the build still fails, you can modify the build command in the Netlify dashboard:
+   - Go to Site settings > Build & deploy > Build settings
+   - Set the build command to: `npm install --legacy-peer-deps && npm run build`
 
 ### Deploying to Vercel
 
