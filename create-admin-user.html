@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin User</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Admin User</h1>
+    <p>This tool will create an admin user in your Supabase project.</p>
+    
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="armandmorin@gmail.com">
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="1armand">
+    </div>
+    
+    <button id="createUser">Create Admin User</button>
+    
+    <div id="result">
+        <p>Results will appear here...</p>
+    </div>
+
+    <script>
+        document.getElementById('createUser').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.innerHTML = '<p>Creating user...</p>';
+            
+            try {
+                // Initialize Supabase client
+                const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
+                const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+                
+                // Step 1: Sign up the user
+                const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    }
+                });
+                
+                if (signUpError) {
+                    throw signUpError;
+                }
+                
+                resultDiv.innerHTML = `<p class="success">User created successfully!</p>`;
+                
+                if (signUpData.user) {
+                    resultDiv.innerHTML += `<p>User ID: ${signUpData.user.id}</p>`;
+                    
+                    // Step 2: Set the user as admin
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ role: 'admin' })
+                        .eq('id', signUpData.user.id);
+                    
+                    if (updateError) {
+                        resultDiv.innerHTML += `<p class="error">Error setting user as admin: ${updateError.message}</p>`;
+                        resultDiv.innerHTML += `<p>You may need to run the SQL script first to create the database tables.</p>`;
+                    } else {
+                        resultDiv.innerHTML += `<p class="success">User role set to admin!</p>`;
+                        resultDiv.innerHTML += `<h3>Setup Complete!</h3>`;
+                        resultDiv.innerHTML += `<p>You can now log in with:</p>`;
+                        resultDiv.innerHTML += `<ul>`;
+                        resultDiv.innerHTML += `<li>Email: ${email}</li>`;
+                        resultDiv.innerHTML += `<li>Password: ${password}</li>`;
+                        resultDiv.innerHTML += `</ul>`;
+                    }
+                } else {
+                    resultDiv.innerHTML += `<p class="error">User created but no user data returned. Check your Supabase dashboard.</p>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
