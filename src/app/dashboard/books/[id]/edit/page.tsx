@@ -6,13 +6,8 @@ import { getBookById, updateBook } from '@/lib/supabase/utils';
 import { Book } from '@/lib/supabase/config';
 import { WysiwygEditor } from '@/components/editor/wysiwyg-editor';
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EditBookPage({ params }: PageProps) {
+// Use a simpler type definition without an interface
+export default function EditBookPage({ params }: { params: { id: string } }) {
   const [book, setBook] = useState<Book | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
