@@ -23,9 +23,8 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  // Remove appDir as it's the default in Next.js 15
   experimental: {
-    // Use valid Next.js 15 experimental options
-    appDir: true,
     serverActions: {
       allowedOrigins: ['localhost:3000', 'netlify.app'],
     },
@@ -38,6 +37,8 @@ const nextConfig = {
   },
   // Disable source maps in production to reduce bundle size
   productionBrowserSourceMaps: false,
+  // Add output configuration for Netlify
+  output: 'standalone',
 }
 
 module.exports = nextConfig
