@@ -2,16 +2,163 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+// Define some basic styles for the page
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    minHeight: '100vh',
+  },
+  header: {
+    backgroundColor: '#ffffff',
+    borderBottom: '1px solid #e5e7eb',
+  },
+  headerContainer: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logo: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  navButtons: {
+    display: 'flex',
+    gap: '1rem',
+  },
+  heroSection: {
+    background: 'linear-gradient(to right, #2563eb, #4f46e5)',
+    padding: '5rem 0',
+  },
+  heroContainer: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 1rem',
+  },
+  heroContent: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '2rem',
+  },
+  heroTitle: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: '1.5rem',
+    textAlign: 'center' as const,
+  },
+  heroText: {
+    fontSize: '1.25rem',
+    color: '#e0e7ff',
+    marginBottom: '2rem',
+    textAlign: 'center' as const,
+    maxWidth: '800px',
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '1rem',
+  },
+  sectionTitle: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: '1rem',
+    textAlign: 'center' as const,
+  },
+  sectionText: {
+    fontSize: '1.125rem',
+    color: '#4b5563',
+    marginBottom: '2rem',
+    textAlign: 'center' as const,
+    maxWidth: '800px',
+    margin: '0 auto',
+  },
+  featuresGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '2rem',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 1rem',
+  },
+  featureCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+  },
+  featureTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: '0.5rem',
+  },
+  featureText: {
+    fontSize: '1rem',
+    color: '#4b5563',
+  },
+  footer: {
+    backgroundColor: '#111827',
+    color: '#ffffff',
+    padding: '3rem 0',
+    marginTop: 'auto',
+  },
+  footerContainer: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 1rem',
+  },
+  footerTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    marginBottom: '1rem',
+  },
+  footerText: {
+    color: '#9ca3af',
+    maxWidth: '500px',
+  },
+  footerGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: '2rem',
+    marginTop: '2rem',
+  },
+  footerHeading: {
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    marginBottom: '1rem',
+  },
+  footerLink: {
+    color: '#9ca3af',
+    textDecoration: 'none',
+    ':hover': {
+      color: '#ffffff',
+    },
+  },
+  footerBottom: {
+    borderTop: '1px solid #374151',
+    marginTop: '3rem',
+    paddingTop: '2rem',
+    textAlign: 'center' as const,
+    color: '#9ca3af',
+  },
+};
+
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div style={styles.container}>
       {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900">KPublisher</h1>
+      <header style={styles.header}>
+        <div style={styles.headerContainer}>
+          <div>
+            <h1 style={styles.logo}>KPublisher</h1>
           </div>
-          <div className="flex items-center space-x-4">
+          <div style={styles.navButtons}>
             <Link href="/auth/login">
               <Button variant="outline">Log In</Button>
             </Link>
@@ -23,39 +170,37 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 py-20">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-10 md:mb-0">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+      <section style={styles.heroSection}>
+        <div style={styles.heroContainer}>
+          <div style={styles.heroContent}>
+            <div style={{ textAlign: 'center', maxWidth: '800px' }}>
+              <h2 style={styles.heroTitle}>
                 Create Books with AI
               </h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p style={styles.heroText}>
                 KPublisher helps you create professional books and covers using
                 AI. Write, edit, and publish your content with ease.
               </p>
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <div style={styles.buttonGroup}>
                 <Link href="/auth/signup">
-                  <Button size="lg" className="w-full sm:w-auto bg-white text-blue-700 hover:bg-blue-50">
+                  <Button size="lg" style={{ backgroundColor: 'white', color: '#2563eb' }}>
                     Get Started
                   </Button>
                 </Link>
                 <Link href="#features">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-blue-700">
+                  <Button size="lg" variant="outline" style={{ borderColor: 'white', color: 'white' }}>
                     Learn More
                   </Button>
                 </Link>
               </div>
             </div>
-            <div className="md:w-1/2 flex justify-center">
-              <div className="relative w-full max-w-md">
-                <div className="absolute -top-4 -left-4 w-full h-full bg-blue-500 rounded-lg"></div>
-                <div className="absolute -bottom-4 -right-4 w-full h-full bg-indigo-500 rounded-lg"></div>
-                <div className="relative bg-white p-6 rounded-lg shadow-xl">
-                  <div className="aspect-[3/4] bg-gray-100 rounded-md mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded-md w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded-md w-1/2"></div>
-                </div>
+            <div style={{ width: '100%', maxWidth: '500px', margin: '0 auto', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-1rem', left: '-1rem', width: '100%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '0.5rem' }}></div>
+              <div style={{ position: 'absolute', bottom: '-1rem', right: '-1rem', width: '100%', height: '100%', backgroundColor: '#4f46e5', borderRadius: '0.5rem' }}></div>
+              <div style={{ position: 'relative', backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' }}>
+                <div style={{ aspectRatio: '3/4', backgroundColor: '#f3f4f6', borderRadius: '0.375rem', marginBottom: '1rem' }}></div>
+                <div style={{ height: '1.5rem', backgroundColor: '#e5e7eb', borderRadius: '0.375rem', width: '75%', marginBottom: '0.5rem' }}></div>
+                <div style={{ height: '1rem', backgroundColor: '#e5e7eb', borderRadius: '0.375rem', width: '50%' }}></div>
               </div>
             </div>
           </div>
@@ -63,32 +208,31 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section id="features" style={{ padding: '5rem 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={styles.sectionTitle}>
               Powerful Features for Book Creation
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p style={styles.sectionText}>
               Everything you need to create, edit, and publish your books
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div style={styles.featuresGrid}>
             {/* Feature 1 */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <div style={styles.featureCard}>
+              <div style={{ width: '3rem', height: '3rem', backgroundColor: '#dbeafe', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#2563eb"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-blue-600"
                 >
                   <path d="M12 8V4H8"></path>
                   <rect width="16" height="12" x="4" y="8" rx="2"></rect>
@@ -98,10 +242,10 @@ export default function LandingPage() {
                   <path d="M9 13v2"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 style={styles.featureTitle}>
                 AI-Powered Content Creation
               </h3>
-              <p className="text-gray-600">
+              <p style={styles.featureText}>
                 Use OpenAI's powerful assistants to generate book content, outlines,
                 chapters, and more with simple prompts.
               </p>
@@ -253,16 +397,16 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section style={{ backgroundColor: '#f3f4f6', padding: '5rem 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', textAlign: 'center' }}>
+          <h2 style={styles.sectionTitle}>
             Ready to Start Creating?
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p style={{ fontSize: '1.25rem', color: '#4b5563', maxWidth: '800px', margin: '0 auto 2rem auto' }}>
             Join KPublisher today and start creating amazing books with AI.
           </p>
           <Link href="/auth/signup">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button size="lg" style={{ backgroundColor: '#2563eb', color: 'white' }}>
               Sign Up Now
             </Button>
           </Link>
@@ -270,72 +414,72 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-auto">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between">
-            <div className="mb-8 md:mb-0">
-              <h3 className="text-2xl font-bold mb-4">KPublisher</h3>
-              <p className="text-gray-400 max-w-md">
+      <footer style={styles.footer}>
+        <div style={styles.footerContainer}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', '@media (min-width: 768px)': { flexDirection: 'row', justifyContent: 'space-between' } }}>
+            <div style={{ marginBottom: '2rem' }}>
+              <h3 style={styles.footerTitle}>KPublisher</h3>
+              <p style={styles.footerText}>
                 AI-powered book creation platform for writers, authors, and
                 content creators.
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div style={styles.footerGrid}>
               <div>
-                <h4 className="text-lg font-semibold mb-4">Product</h4>
-                <ul className="space-y-2">
+                <h4 style={styles.footerHeading}>Product</h4>
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <li>
-                    <a href="#features" className="text-gray-400 hover:text-white">
+                    <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Features
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Pricing
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       FAQ
                     </a>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-lg font-semibold mb-4">Company</h4>
-                <ul className="space-y-2">
+                <h4 style={styles.footerHeading}>Company</h4>
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       About
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Blog
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Contact
                     </a>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-lg font-semibold mb-4">Legal</h4>
-                <ul className="space-y-2">
+                <h4 style={styles.footerHeading}>Legal</h4>
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Terms
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Privacy
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white">
+                    <a href="#" style={{ color: '#9ca3af', textDecoration: 'none' }}>
                       Cookies
                     </a>
                   </li>
@@ -343,7 +487,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <div style={styles.footerBottom}>
             <p>&copy; {new Date().getFullYear()} KPublisher. All rights reserved.</p>
           </div>
         </div>

@@ -3,9 +3,9 @@ import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 export async function middleware(request: NextRequest) {
-  // Create a Supabase client configured to use cookies with hardcoded values
-  const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
-  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
+  // Create a Supabase client configured to use cookies with environment variables
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
@@ -26,8 +26,8 @@ export async function middleware(request: NextRequest) {
   ];
 
   // Check if the request is for a public route
-  const isPublicRoute = publicRoutes.some(route => 
-    request.nextUrl.pathname === route || 
+  const isPublicRoute = publicRoutes.some(route =>
+    request.nextUrl.pathname === route ||
     request.nextUrl.pathname.startsWith('/api/') ||
     request.nextUrl.pathname.startsWith('/_next/') ||
     request.nextUrl.pathname.includes('.')
@@ -41,7 +41,7 @@ export async function middleware(request: NextRequest) {
 
   // If the user is signed in and trying to access auth pages, redirect to dashboard
   if (session && (
-    request.nextUrl.pathname === '/auth/login' || 
+    request.nextUrl.pathname === '/auth/login' ||
     request.nextUrl.pathname === '/auth/signup' ||
     request.nextUrl.pathname === '/auth/reset-password'
   )) {
