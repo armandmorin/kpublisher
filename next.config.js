@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Add transpilePackages to handle react-quill
+  transpilePackages: ['react-quill'],
+  // Configure webpack to handle CSS files
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+    });
+    return config;
+  },
   reactStrictMode: false, // Disable strict mode to avoid double rendering in development
   typescript: {
     // !! WARN !!

@@ -135,6 +135,15 @@ This error occurs when trying to insert a user into the users table but the RLS 
 
 This error occurs when the Supabase client is not properly configured with the correct headers. The latest version of the application includes proper configuration for the Supabase client. If you encounter this error, make sure you're using the latest version of the code.
 
+### Error: "Module not found: Can't resolve 'react-quill/dist/quill.snow.css'"
+
+This error occurs during the build process when the CSS file for react-quill can't be found. The latest version of the application includes:
+1. An updated version of react-quill (^2.0.0 instead of ^0.0.2)
+2. Configuration in next.config.js to handle CSS imports
+3. Additional dependencies (css-loader and style-loader) to process CSS files
+
+If you encounter this error, make sure you're using the latest version of the code and run `npm install --legacy-peer-deps` before building.
+
 ## Database Schema
 
 The database consists of the following tables:
