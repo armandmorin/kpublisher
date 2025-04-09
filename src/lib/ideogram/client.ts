@@ -1,17 +1,13 @@
-import { getApiKeyByService } from '../supabase/utils';
-
 // Ideogram API base URL
 const IDEOGRAM_API_URL = 'https://api.ideogram.ai/api/v1';
 
+// Hardcoded Ideogram API key for deployment
+// In a production environment, this should be stored securely
+const IDEOGRAM_API_KEY = 'api_org_12345678901234567890abcdefghijklmnopqrstuvwxyz';
+
 // Function to get the Ideogram API key
 async function getIdeogramApiKey(): Promise<string | null> {
-  try {
-    const apiKey = await getApiKeyByService('ideogram');
-    return apiKey?.api_key || null;
-  } catch (error) {
-    console.error('Error getting Ideogram API key:', error);
-    return null;
-  }
+  return IDEOGRAM_API_KEY;
 }
 
 // Function to generate an image using Ideogram

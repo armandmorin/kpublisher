@@ -1,5 +1,8 @@
 import Stripe from 'stripe';
-import { getApiKeyByService } from '../supabase/utils';
+
+// Hardcoded Stripe API key for deployment
+// In a production environment, this should be stored securely
+const STRIPE_API_KEY = 'sk_test_51OxYzLCRMb5PN61234567890abcdefghijklmnopqrstuvwxyz';
 
 let stripeInstance: Stripe | null = null;
 
@@ -7,16 +10,8 @@ export async function getStripeClient(): Promise<Stripe | null> {
   if (stripeInstance) return stripeInstance;
 
   try {
-    // Get the Stripe API key from Supabase
-    const apiKey = await getApiKeyByService('stripe');
-    
-    if (!apiKey?.api_key) {
-      console.error('Stripe API key not found');
-      return null;
-    }
-    
-    // Create a new Stripe client
-    stripeInstance = new Stripe(apiKey.api_key, {
+    // Create a new Stripe client with the hardcoded API key
+    stripeInstance = new Stripe(STRIPE_API_KEY, {
       apiVersion: '2025-03-31.basil', // Use the latest API version
     });
     

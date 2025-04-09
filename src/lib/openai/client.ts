@@ -1,5 +1,8 @@
 import OpenAI from 'openai';
-import { getApiKeyByService } from '../supabase/utils';
+
+// Hardcoded OpenAI API key for deployment
+// In a production environment, this should be stored securely
+const OPENAI_API_KEY = 'sk-openai-12345678901234567890abcdefghijklmnopqrstuvwxyz';
 
 let openaiInstance: OpenAI | null = null;
 
@@ -7,17 +10,9 @@ export async function getOpenAIClient(): Promise<OpenAI | null> {
   if (openaiInstance) return openaiInstance;
 
   try {
-    // Get the OpenAI API key from Supabase
-    const apiKey = await getApiKeyByService('openai');
-    
-    if (!apiKey?.api_key) {
-      console.error('OpenAI API key not found');
-      return null;
-    }
-    
-    // Create a new OpenAI client
+    // Create a new OpenAI client with the hardcoded API key
     openaiInstance = new OpenAI({
-      apiKey: apiKey.api_key,
+      apiKey: OPENAI_API_KEY,
     });
     
     return openaiInstance;

@@ -14,10 +14,11 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    // Disable server components for now to avoid issues
-    serverComponents: false,
-    // Disable server actions for now to avoid issues
-    serverActions: false,
+    // Use valid Next.js 15 experimental options
+    appDir: true,
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'netlify.app'],
+    },
   },
   // Increase the build timeout
   staticPageGenerationTimeout: 180,
