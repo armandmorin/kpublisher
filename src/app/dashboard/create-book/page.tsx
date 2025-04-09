@@ -14,9 +14,17 @@ export default function CreateBookPage() {
   const [selectedAssistant, setSelectedAssistant] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts (client-side only)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Fetch user and assistants on component mount
   useEffect(() => {
+    if (!isClient) return;
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -47,7 +55,7 @@ export default function CreateBookPage() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, isClient]);
 
   // Handle saving content
   const handleSaveContent = async (content: string, title: string) => {
@@ -75,6 +83,11 @@ export default function CreateBookPage() {
   const handleAssistantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAssistant(e.target.value);
   };
+
+  // Don't render anything on the server
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   if (isLoading) {
     return (

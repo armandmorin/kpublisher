@@ -10,9 +10,17 @@ export default function CreateCoverPage() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts (client-side only)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Fetch user on component mount
   useEffect(() => {
+    if (!isClient) return;
+
     const fetchUser = async () => {
       try {
         setIsLoading(true);
@@ -34,13 +42,18 @@ export default function CreateCoverPage() {
     };
 
     fetchUser();
-  }, [router]);
+  }, [router, isClient]);
 
   // Handle cover generation success
   const handleCoverGenerated = (imageUrl: string) => {
     // You could add additional logic here if needed
     console.log("Cover generated:", imageUrl);
   };
+
+  // Don't render anything on the server
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   if (isLoading) {
     return (

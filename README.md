@@ -152,6 +152,7 @@ If you encounter build errors:
    - Setting environment variables in `netlify.toml` to disable TypeScript checking
    - Creating a `next.config.js` file with `typescript.ignoreBuildErrors: true`
    - Simplifying type definitions in dynamic route pages
+   - Adding client-side rendering guards to pages that use OpenAI and other external APIs
 
    If you want to re-enable TypeScript checking, you can:
    ```typescript
@@ -159,6 +160,12 @@ If you encounter build errors:
    // 2. Remove the NEXT_TYPESCRIPT_CHECK_DISABLED environment variable
    // 3. Set typescript.ignoreBuildErrors: false in next.config.js
    ```
+
+4. **Server-Side Rendering Issues**: Some pages that use external APIs like OpenAI might cause issues during server-side rendering. We've addressed this by:
+   - Adding `isClient` state to client components to prevent server-side rendering of API calls
+   - Configuring Next.js to disable server components and server actions in `next.config.js`
+   - Increasing the static page generation timeout to allow more time for complex pages
+   - Disabling image optimization during build to speed up the process
 
 4. **Build Command**: If the build still fails, you can modify the build command in the Netlify dashboard:
    - Go to Site settings > Build & deploy > Build settings
