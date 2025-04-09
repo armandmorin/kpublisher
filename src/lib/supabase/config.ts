@@ -4,8 +4,20 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
 
-// Create a single supabase client for the browser
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a single supabase client for the browser with proper configuration
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  },
+  global: {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+});
 
 // Database types
 export type User = {

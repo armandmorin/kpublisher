@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Admin User</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,8 +53,8 @@
     </style>
 </head>
 <body>
-    <h1>Create Admin User</h1>
-    <p>This tool will create an admin user in your Supabase project.</p>
+    <h1>Create or Update Admin User</h1>
+    <p>This tool will create an admin user in your Supabase project or update an existing user to have admin privileges.</p>
     
     <div class="form-group">
         <label for="email">Email:</label>
@@ -67,12 +67,157 @@
     </div>
     
     <button id="createUser">Create Admin User</button>
+    <button id="updateUser" style="background-color: #10b981;">Update Existing User to Admin</button>
+    <button id="syncUser" style="background-color: #f59e0b;">Sync Auth User to Database</button>
     
     <div id="result">
         <p>Results will appear here...</p>
     </div>
 
     <script>
+        // Function to get auth user and create a record in the users table
+        async function syncAuthUserToDatabase() {
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            
+            resultDiv.innerHTML = '<p>Syncing auth user to database...</p>';
+            
+            try {
+                const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                
+                // First, check if the user exists in auth
+                const { data: authUsers, error: authError } = await supabaseClient.auth.admin.listUsers();
+                
+                if (authError) {
+                    resultDiv.innerHTML = `<p class="error">Error accessing auth users: ${authError.message}</p>`;
+                    resultDiv.innerHTML += `<p>Note: This might be because the anon key doesn't have admin access.</p>`;
+                    
+                    // Try a different approach - use the auth API directly
+                    resultDiv.innerHTML += `<p>Trying manual approach...</p>`;
+                    
+                    // Prompt for the user ID
+                    const userId = prompt("Please enter the user's UUID from the Supabase Authentication dashboard:");
+                    
+                    if (!userId) {
+                        resultDiv.innerHTML = `<p class="error">User ID is required.</p>`;
+                        resultDiv.innerHTML += `<p>Please go to your Supabase dashboard > Authentication > Users and copy the UUID of the user.</p>`;
+                        return;
+                    }
+                    
+                    // Check if the user exists in the users table
+                    const { data: existingUsers, error: existingError } = await supabaseClient
+                        .from('users')
+                        .select('id')
+                        .eq('id', userId);
+                    
+                    if (!existingError && existingUsers && existingUsers.length > 0) {
+                        resultDiv.innerHTML = `<p class="warning">User already exists in the database.</p>`;
+                        resultDiv.innerHTML += `<p>You can use the "Update Existing User to Admin" button.</p>`;
+                        return;
+                    }
+                    
+                    // Insert the user into the users table
+                    const { data: insertData, error: insertError } = await supabaseClient
+                        .from('users')
+                        .insert({
+                            id: userId,
+                            email: email,
+                            role: 'user'
+                        })
+                        .select();
+                    
+                    if (insertError) {
+                        resultDiv.innerHTML = `<p class="error">Error inserting user: ${insertError.message}</p>`;
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML = `<p class="success">User synced to database!</p>`;
+                    resultDiv.innerHTML += `<p>You can now use the "Update Existing User to Admin" button.</p>`;
+                    
+                    return;
+                }
+                
+                // Find the user in the auth users
+                const authUser = authUsers.users.find(user => user.email === email);
+                
+                if (!authUser) {
+                    resultDiv.innerHTML = `<p class="error">User with email ${email} not found in auth system.</p>`;
+                    resultDiv.innerHTML += `<p>Try creating the user first with the "Create Admin User" button.</p>`;
+                    return;
+                }
+                
+                // Check if the user exists in the users table
+                const { data: existingUsers, error: existingError } = await supabaseClient
+                    .from('users')
+                    .select('id')
+                    .eq('email', email);
+                
+                if (!existingError && existingUsers && existingUsers.length > 0) {
+                    resultDiv.innerHTML = `<p class="warning">User already exists in the database.</p>`;
+                    resultDiv.innerHTML += `<p>You can use the "Update Existing User to Admin" button.</p>`;
+                    return;
+                }
+                
+                // Insert the user into the users table
+                const { data: insertData, error: insertError } = await supabaseClient
+                    .from('users')
+                    .insert({
+                        id: authUser.id,
+                        email: email,
+                        role: 'user'
+                    })
+                    .select();
+                
+                if (insertError) {
+                    resultDiv.innerHTML = `<p class="error">Error inserting user: ${insertError.message}</p>`;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `<p class="success">User synced to database!</p>`;
+                resultDiv.innerHTML += `<p>You can now use the "Update Existing User to Admin" button.</p>`;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+        // Function to set a user as admin
+        async function setUserAsAdmin(userId, email) {
+            const resultDiv = document.getElementById('result');
+            try {
+                const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                
+                // Update the user's role to admin
+                const { error: updateError } = await supabaseClient
+                    .from('users')
+                    .update({ role: 'admin' })
+                    .eq('id', userId);
+                
+                if (updateError) {
+                    if (updateError.message.includes('not found')) {
+                        resultDiv.innerHTML += `<p class="error">User record not found in the users table. Make sure you've run the SQL script first.</p>`;
+                    } else {
+                        resultDiv.innerHTML += `<p class="error">Error setting user as admin: ${updateError.message}</p>`;
+                    }
+                } else {
+                    resultDiv.innerHTML += `<p class="success">User role set to admin!</p>`;
+                    resultDiv.innerHTML += `<h3>Setup Complete!</h3>`;
+                    resultDiv.innerHTML += `<p>You can now log in with:</p>`;
+                    resultDiv.innerHTML += `<ul>`;
+                    resultDiv.innerHTML += `<li>Email: ${email}</li>`;
+                    resultDiv.innerHTML += `</ul>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="error">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+
+        // Create a new admin user
         document.getElementById('createUser').addEventListener('click', async () => {
             const resultDiv = document.getElementById('result');
             const email = document.getElementById('email').value;
@@ -84,10 +229,10 @@
                 // Initialize Supabase client
                 const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
                 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
-                const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
                 
                 // Step 1: Sign up the user
-                const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
                     email,
                     password,
                     options: {
@@ -105,32 +250,67 @@
                     resultDiv.innerHTML += `<p>User ID: ${signUpData.user.id}</p>`;
                     
                     // Step 2: Set the user as admin
-                    const { error: updateError } = await supabase
-                        .from('users')
-                        .update({ role: 'admin' })
-                        .eq('id', signUpData.user.id);
-                    
-                    if (updateError) {
-                        resultDiv.innerHTML += `<p class="error">Error setting user as admin: ${updateError.message}</p>`;
-                        resultDiv.innerHTML += `<p>You may need to run the SQL script first to create the database tables.</p>`;
-                    } else {
-                        resultDiv.innerHTML += `<p class="success">User role set to admin!</p>`;
-                        resultDiv.innerHTML += `<h3>Setup Complete!</h3>`;
-                        resultDiv.innerHTML += `<p>You can now log in with:</p>`;
-                        resultDiv.innerHTML += `<ul>`;
-                        resultDiv.innerHTML += `<li>Email: ${email}</li>`;
-                        resultDiv.innerHTML += `<li>Password: ${password}</li>`;
-                        resultDiv.innerHTML += `</ul>`;
-                    }
+                    await setUserAsAdmin(signUpData.user.id, email);
                 } else {
                     resultDiv.innerHTML += `<p class="error">User created but no user data returned. Check your Supabase dashboard.</p>`;
                 }
                 
             } catch (error) {
+                if (error.message.includes('duplicate key')) {
+                    resultDiv.innerHTML = `<p class="error">User with email ${email} already exists. Use the "Update Existing User to Admin" button instead.</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                    console.error('Error:', error);
+                }
+            }
+        });
+
+        // Update an existing user to admin
+        document.getElementById('updateUser').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            
+            resultDiv.innerHTML = '<p>Finding user and updating role...</p>';
+            
+            try {
+                const supabaseUrl = 'https://tvzpyrzrmcbkibanfbdb.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2enB5cnpybWNia2liYW5mYmRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDU5NTIsImV4cCI6MjA1OTcyMTk1Mn0.NBf3hFHMxbbcorULSBuuVw8XQY_9Zw3nqrydKDLFWUA';
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                
+                // Find the user by email
+                const { data: userData, error: userError } = await supabaseClient
+                    .from('users')
+                    .select('id')
+                    .eq('email', email);
+                
+                if (userError) {
+                    resultDiv.innerHTML = `<p class="error">Error finding user: ${userError.message}</p>`;
+                    return;
+                }
+                
+                if (!userData || userData.length === 0) {
+                    resultDiv.innerHTML = `<p class="error">User with email ${email} not found in the users table. Make sure you've run the SQL script first and the user exists.</p>`;
+                    resultDiv.innerHTML += `<p>Try creating the user first with the "Create Admin User" button.</p>`;
+                    return;
+                }
+                
+                if (userData.length > 1) {
+                    resultDiv.innerHTML = `<p class="warning">Multiple users found with email ${email}. Using the first one.</p>`;
+                }
+                
+                const userId = userData[0].id;
+                resultDiv.innerHTML = `<p>Found user with ID: ${userId}</p>`;
+                
+                // Update the user's role to admin
+                await setUserAsAdmin(userId, email);
+            } catch (error) {
                 resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
                 console.error('Error:', error);
             }
         });
+        
+        // Sync auth user to database
+        document.getElementById('syncUser').addEventListener('click', syncAuthUserToDatabase);
     </script>
 </body>
 </html>

@@ -20,24 +20,27 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own data" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Admins can view all user data" ON public.users
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+-- Drop this policy to avoid infinite recursion
+DROP POLICY IF EXISTS "Admins can view all user data" ON public.users;
 
+-- Drop this policy to avoid infinite recursion
+DROP POLICY IF EXISTS "Admins can update user data" ON public.users;
+
+-- Create a simpler policy that doesn't cause recursion
 CREATE POLICY "Admins can update user data" ON public.users
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 -- Add a temporary policy to allow public access to users table
 CREATE POLICY "Allow public access to users table" ON public.users
   FOR SELECT
   USING (true);
+
+-- Add a policy to allow inserting users
+CREATE POLICY "Allow inserting users" ON public.users
+  FOR INSERT
+  WITH CHECK (true);
 
 -- Create function to handle user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -123,6 +126,32 @@ CREATE TABLE IF NOT EXISTS public.subscription_plans (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
+-- Drop existing policies
+DROP POLICY IF EXISTS "Users can view their own books" ON public.books;
+DROP POLICY IF EXISTS "Users can insert their own books" ON public.books;
+DROP POLICY IF EXISTS "Users can update their own books" ON public.books;
+DROP POLICY IF EXISTS "Users can delete their own books" ON public.books;
+
+DROP POLICY IF EXISTS "Users can view their own book covers" ON public.book_covers;
+DROP POLICY IF EXISTS "Users can insert their own book covers" ON public.book_covers;
+DROP POLICY IF EXISTS "Users can update their own book covers" ON public.book_covers;
+DROP POLICY IF EXISTS "Users can delete their own book covers" ON public.book_covers;
+
+DROP POLICY IF EXISTS "Anyone can view API keys" ON public.api_keys;
+DROP POLICY IF EXISTS "Admins can insert API keys" ON public.api_keys;
+DROP POLICY IF EXISTS "Admins can update API keys" ON public.api_keys;
+DROP POLICY IF EXISTS "Admins can delete API keys" ON public.api_keys;
+
+DROP POLICY IF EXISTS "Anyone can view assistants" ON public.assistants;
+DROP POLICY IF EXISTS "Admins can insert assistants" ON public.assistants;
+DROP POLICY IF EXISTS "Admins can update assistants" ON public.assistants;
+DROP POLICY IF EXISTS "Admins can delete assistants" ON public.assistants;
+
+DROP POLICY IF EXISTS "Anyone can view subscription plans" ON public.subscription_plans;
+DROP POLICY IF EXISTS "Admins can insert subscription plans" ON public.subscription_plans;
+DROP POLICY IF EXISTS "Admins can update subscription plans" ON public.subscription_plans;
+DROP POLICY IF EXISTS "Admins can delete subscription plans" ON public.subscription_plans;
+
 -- Books table policies
 ALTER TABLE public.books ENABLE ROW LEVEL SECURITY;
 
@@ -159,25 +188,20 @@ ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view API keys" ON public.api_keys
   FOR SELECT USING (true);
 
+-- Use a simpler approach for admin policies to avoid recursion
 CREATE POLICY "Admins can insert API keys" ON public.api_keys
   FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can update API keys" ON public.api_keys
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can delete API keys" ON public.api_keys
   FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 -- Assistants table policies
@@ -186,25 +210,20 @@ ALTER TABLE public.assistants ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view assistants" ON public.assistants
   FOR SELECT USING (true);
 
+-- Use a simpler approach for admin policies to avoid recursion
 CREATE POLICY "Admins can insert assistants" ON public.assistants
   FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can update assistants" ON public.assistants
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can delete assistants" ON public.assistants
   FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 -- Subscription plans table policies
@@ -213,25 +232,20 @@ ALTER TABLE public.subscription_plans ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view subscription plans" ON public.subscription_plans
   FOR SELECT USING (true);
 
+-- Use a simpler approach for admin policies to avoid recursion
 CREATE POLICY "Admins can insert subscription plans" ON public.subscription_plans
   FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can update subscription plans" ON public.subscription_plans
   FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 CREATE POLICY "Admins can delete subscription plans" ON public.subscription_plans
   FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM auth.users WHERE id = auth.uid()) = 'admin'
   );
 
 -- Create triggers for updated_at columns for other tables

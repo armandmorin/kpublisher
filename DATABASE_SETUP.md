@@ -19,6 +19,7 @@ This document provides instructions for setting up the database for the KPublish
 
 This script will:
 - Create all necessary tables (users, books, book_covers, api_keys, assistants, subscription_plans)
+- Drop existing policies to avoid conflicts
 - Set up Row Level Security (RLS) policies
 - Create triggers and functions
 - Insert initial data for API keys, assistants, and subscription plans
@@ -32,9 +33,17 @@ This script will:
    - Email: armandmorin@gmail.com
    - Password: 1armand
 3. You can change these if desired
-4. Click "Create Admin User"
-5. Wait for the process to complete
-6. You should see a success message if everything worked correctly
+4. If the user doesn't exist yet:
+   - Click "Create Admin User"
+5. If the user already exists:
+   - Click "Update Existing User to Admin"
+6. Wait for the process to complete
+7. You should see a success message if everything worked correctly
+
+The tool now provides three options:
+- **Create Admin User**: Creates a new user and sets them as admin
+- **Update Existing User to Admin**: Finds an existing user by email and sets them as admin
+- **Sync Auth User to Database**: Fixes the issue where a user exists in the auth system but not in the users table
 
 ### Option 2: Using the Supabase Dashboard
 
@@ -87,6 +96,44 @@ Try running the SQL script again to ensure all tables and policies are created c
 ### Error: "Cannot access 'supabase' before initialization"
 
 If you're using the HTML tool and see this error, try refreshing the page. The Supabase client might not have loaded correctly.
+
+### Error: "duplicate key value violates unique constraint"
+
+This error occurs when trying to create a user that already exists. Use the "Update Existing User to Admin" button instead of "Create Admin User".
+
+### Error: "infinite recursion detected in policy for relation"
+
+This error has been fixed in the latest version of the SQL script. The script now uses a simpler approach for admin policies that doesn't cause recursion. If you encounter this error, make sure you're using the latest version of the setup-database.sql file.
+
+### Error: "JSON object requested, multiple (or no) rows returned"
+
+This error has been fixed in the latest version of the HTML tool. The tool now properly handles cases where multiple users with the same email exist or no users are found. If you encounter this error, make sure you're using the latest version of the create-admin-user.html file.
+
+### Error: User exists in auth but not in the database
+
+If you encounter a situation where the "Update Existing User to Admin" button says the user doesn't exist in the users table, but the "Create Admin User" button says the user already exists, this means the user exists in the auth system but not in the users table. Use the "Sync Auth User to Database" button to fix this issue.
+
+### Error: "Could not find the function public.execute_sql(sql_query) in the schema cache"
+
+This error has been fixed in the latest version of the HTML tool. The tool now uses a simpler approach that doesn't rely on the `execute_sql` function. If you encounter this error, make sure you're using the latest version of the create-admin-user.html file.
+
+### Error: "Invalid login credentials"
+
+This error occurs when trying to sign in with incorrect credentials. The latest version of the HTML tool now uses a manual approach that prompts you for the user's UUID instead of trying to sign in. If you encounter this error, make sure you're using the latest version of the create-admin-user.html file.
+
+To use the manual approach:
+1. Go to your Supabase dashboard > Authentication > Users
+2. Find the user you want to sync
+3. Copy the UUID of the user
+4. When prompted by the tool, paste the UUID
+
+### Error: "new row violates row-level security policy for table 'users'"
+
+This error occurs when trying to insert a user into the users table but the RLS policy prevents it. The latest version of the SQL script now includes a policy that allows inserting users. If you encounter this error, make sure you're using the latest version of the setup-database.sql file and run it again.
+
+### Error: "GET https://tvzpyrzrmcbkibanfbdb.supabase.co/rest/v1/users?select=*&id=eq.[UUID] 406 (Not Acceptable)"
+
+This error occurs when the Supabase client is not properly configured with the correct headers. The latest version of the application includes proper configuration for the Supabase client. If you encounter this error, make sure you're using the latest version of the code.
 
 ## Database Schema
 
