@@ -123,12 +123,31 @@ kpublisher/
 
 ## Deployment
 
-The application can be deployed to Vercel:
+### Deploying to Netlify
+
+The application is configured for deployment on Netlify:
+
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
+2. Connect your repository to Netlify
+3. Netlify will automatically detect the Next.js project and use the settings in `netlify.toml`
+4. Set up the environment variables in the Netlify dashboard:
+   - Go to Site settings > Environment variables
+   - Add all the variables from your `.env.local` file
+
+The deployment is configured to handle the dependency conflict between React 19 and react-quill by using the `--legacy-peer-deps` flag during installation.
+
+### Deploying to Vercel
+
+Alternatively, the application can be deployed to Vercel:
 
 ```bash
 npm run build
 vercel deploy
 ```
+
+Note: When deploying to Vercel, you may need to add the following to your Vercel project settings:
+- Build Command: `npm install --legacy-peer-deps && npm run build`
+- Install Command: `npm install --legacy-peer-deps`
 
 ## License
 
