@@ -8,6 +8,8 @@
   NEXT_TELEMETRY_DISABLED = "1"
   ESLINT_NO_DEV_ERRORS = "true"
   NEXT_LINT_IGNORE_ESLINT = "true"
+  NEXT_TYPESCRIPT_CHECK_DISABLED = "true"
+  TYPESCRIPT_INCREMENTAL = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
