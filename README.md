@@ -147,7 +147,20 @@ If you encounter build errors:
 
 2. **Dependency Conflicts**: The `netlify.toml` and `package.json` files are configured to use `--legacy-peer-deps` to resolve conflicts between React 19 and older dependencies like react-quill.
 
-3. **Build Command**: If the build still fails, you can modify the build command in the Netlify dashboard:
+3. **TypeScript Errors**: Next.js 15 has stricter type checking for page props. If you encounter TypeScript errors related to page props, ensure you're using the correct interface:
+   ```typescript
+   interface PageProps {
+     params: {
+       id: string;
+     };
+   }
+   
+   export default function YourPage({ params }: PageProps) {
+     // Your page component
+   }
+   ```
+
+4. **Build Command**: If the build still fails, you can modify the build command in the Netlify dashboard:
    - Go to Site settings > Build & deploy > Build settings
    - Set the build command to: `npm install --legacy-peer-deps && npm run build`
 

@@ -4,7 +4,13 @@ import { redirect } from 'next/navigation';
 import { getBookById, getCurrentUser } from '@/lib/supabase/utils';
 import { WysiwygEditor } from '@/components/editor/wysiwyg-editor';
 
-export default async function BookPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function BookPage({ params }: PageProps) {
   // Get the current user
   const user = await getCurrentUser();
 
