@@ -149,14 +149,12 @@ If you encounter build errors:
 
 3. **TypeScript Errors**: Next.js 15 has stricter type checking for page props. We've configured the project to disable TypeScript checking during the build process to avoid these issues. The configuration includes:
    - Setting `strict: false` in `tsconfig.json`
-   - Adding `--no-typescript` flag to the build command
    - Setting environment variables in `netlify.toml` to disable TypeScript checking
 
    If you want to re-enable TypeScript checking, you can:
    ```typescript
    // 1. Update tsconfig.json to set strict: true
-   // 2. Remove the --no-typescript flag from the build command
-   // 3. Remove the NEXT_TYPESCRIPT_CHECK_DISABLED environment variable
+   // 2. Remove the NEXT_TYPESCRIPT_CHECK_DISABLED environment variable
    ```
 
 4. **Build Command**: If the build still fails, you can modify the build command in the Netlify dashboard:
